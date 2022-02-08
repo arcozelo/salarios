@@ -69,6 +69,7 @@ float liquido,imposto=0,salario, liq_menos_ret_fonte, colect, sstrab, ssempr, al
 int i = 0;
 
 
+
 errno = 0;
 if (argc != 2)	{
 	printf("\n Help! Help? no help\n");

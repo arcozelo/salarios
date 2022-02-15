@@ -3,8 +3,9 @@
 #include <limits.h>  // for INT_MAX
 #include <stdlib.h>  // for strtol
 #include <math.h>  	// for fmaxf, must compile with -lm
+#include <unistd.h>	// execl
 
-//#define TABELA_RET
+#define TABELA_RET
 int main(int argc, char *argv[]){
 
 struct esc
@@ -67,6 +68,8 @@ struct esc retf[25]=
 char *p;
 float liquido,imposto=0,salario, liq_menos_ret_fonte, colect, sstrab, ssempr, alim, adse;
 int i = 0;
+char out_str[1000], pwd[100], sh_path[100];
+
 
 
 
@@ -118,6 +121,11 @@ if (errno != 0 || *p != '\0' || conv > INT_MAX) {
 	liquido = colect - imposto - sstrab;
 	printf("Tabela Ret. ft.:%d %10.2f %10.2f", i, retf[i].vl, retf[i].tx );
 #endif
+	sprintf(out_str, "%10.2f %10.2f %10.2f %10.2f %10.2f %10.2f %10.2f %10.2f %10.2f %10.2f %10.2f %10.2f %10.2f %10.2f",salario*14, salario, liquido, liquido/14, imposto, imposto/14, alim, alim/12, sstrab, sstrab/14, ssempr, ssempr/14, (salario*14 + imposto + sstrab + ssempr) , (salario*14 + imposto + sstrab + ssempr)/14);
+	getcwd(pwd, 100);
+	sprintf(sh_path, "%s/dodialog.sh %s", pwd, out_str);
+	system(sh_path);
+
     printf("\nBRUTO\n\tAnual:%10.2f€ Mensal:%10.2f€\n", salario*14, salario);
 	printf("LIQUIDO\n");
     printf("\tAnual:%10.2f€ Mensal:%10.2f€ \n", liquido, liquido/14);
@@ -132,7 +140,7 @@ if (errno != 0 || *p != '\0' || conv > INT_MAX) {
 	//printf("\tADSE\n");
     printf("ADSE anual:%10.2f€ Liq Anual:%10.2f€ Liq Mensal:%10.2f€ \n", adse, (liquido - adse), (liquido - adse)/14);
 	printf("CUSTO TOTAL EMPREGADOR Anual:%10.2f€ Mensal:%10.2f€ \n", (salario*14 + imposto + sstrab + ssempr) , (salario*14 + imposto + sstrab + ssempr)/14);
-	
+
 }
 
 }

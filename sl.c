@@ -122,9 +122,9 @@ if (errno != 0 || *p != '\0' || conv > INT_MAX) {
 	printf("Tabela Ret. ft.:%d %10.2f %10.2f", i, retf[i].vl, retf[i].tx );
 #endif
 	sprintf(out_str, "%10.2f %10.2f %10.2f %10.2f %10.2f %10.2f %10.2f %10.2f %10.2f %10.2f %10.2f %10.2f %10.2f %10.2f",salario*14, salario, liquido, liquido/14, imposto, imposto/14, alim, alim/12, sstrab, sstrab/14, ssempr, ssempr/14, (salario*14 + imposto + sstrab + ssempr) , (salario*14 + imposto + sstrab + ssempr)/14);
-	getcwd(pwd, 100);
-	sprintf(sh_path, "%s/dodialog.sh %s", pwd, out_str);
-	system(sh_path);
+	//getcwd(pwd, 100);
+	//sprintf(sh_path, "%s/dodialog.sh %s", pwd, out_str);
+	//system(sh_path);
 
     printf("\nBRUTO\n\tAnual:%10.2f€ Mensal:%10.2f€\n", salario*14, salario);
 	printf("LIQUIDO\n");
@@ -139,7 +139,8 @@ if (errno != 0 || *p != '\0' || conv > INT_MAX) {
 	printf("ALIMENTAÇÃO - Anual:%10.2f€ Mensal:%10.2f€\n\n", alim, alim/12);
 	//printf("\tADSE\n");
     printf("ADSE anual:%10.2f€ Liq Anual:%10.2f€ Liq Mensal:%10.2f€ \n", adse, (liquido - adse), (liquido - adse)/14);
-	printf("CUSTO TOTAL EMPREGADOR Anual:%10.2f€ Mensal:%10.2f€ \n", (salario*14 + imposto + sstrab + ssempr) , (salario*14 + imposto + sstrab + ssempr)/14);
+//	printf("CUSTO TOTAL EMPREGADOR Anual:%10.2f€ Mensal:%10.2f€ \n", (salario*14 + imposto + sstrab + ssempr) , (salario*14 + imposto + sstrab + ssempr)/14);
+	printf("CUSTO TOTAL EMPREGADOR Anual:%10.2f€ Mensal:%10.2f€ \n", (salario*14 + ssempr) , (salario*14 + ssempr)/14);
 
 }
 

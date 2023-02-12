@@ -27,8 +27,9 @@ struct esc_pa
 #define nr_escal 8		// Numero escaloes
 float ss_tr = 11;		// SS paga pelo trabalhador
 float ss_em = 23.75;	// SS paga pelo empregador
-float sub_alim = 4.77;	// Subsídio alimentação, em cartão refeição seria até 7.63 isentos.
-float dias_trab = 250;	// Dias trabalho anuais
+//float sub_alim = 4.77;	// Subsídio alimentação, em cartão refeição seria até 7.63 isentos.
+float sub_alim = 8.32;
+float dias_trab = 231;	// Dias trabalho anuais: 21d * 11m (dias férias, CS)
 float deduc_esp = 4104;	// Dedução específica (se < à SS)
 float ret_fonte = 13.5;	// Retençao na fonte (13.5%)
 float tx_adse = 3.5;		// Contribuição ADSE (3.5%)
@@ -107,11 +108,11 @@ struct esc retf[25]=
 
 // https://stackoverflow.com/questions/9748393/how-can-i-get-argv-as-int
 
-char *p;
+char *p, is_anual = 0;
 float liquido,imposto=0,salario, liq_menos_ret_fonte, colect, sstrab, ssempr, alim, adse;
 int i = 0;
 char out_str[1000], pwd[100], sh_path[100];
-
+long conv;
 
 
 
@@ -120,7 +121,13 @@ if (argc != 2)	{
 	printf("\n Help! Help? no help\n");
 	return 0;
 }
-long conv = strtol(argv[1], &p, 10);
+if ( *argv[1] == 97) {				// ASCII 97 = "a"
+	conv = strtol(argv[1] + 1, &p, 10);
+	is_anual = 1;
+} else {
+	conv = strtol(argv[1], &p, 10);
+}
+
 
 // Check for errors: e.g., the string does not represent an integer
 // or the integer is larger than int
@@ -130,8 +137,10 @@ if (errno != 0 || *p != '\0' || conv > INT_MAX) {
 	return 0;
 } else {
     // No error
-	
-    salario = (float) conv;
+	if (is_anual == 0)
+    	salario = (float) conv;
+	else
+		salario = (float) conv/14.;
 	colect = salario*14;
 	adse = colect * ( tx_adse/100);
 	ssempr = (float) (ss_em/100)*colect;

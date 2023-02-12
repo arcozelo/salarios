@@ -5,7 +5,9 @@
 #include <math.h>  	// for fmaxf, must compile with -lm
 #include <unistd.h>	// execl
 
-#define TABELA_RET
+// É coisa do passado, agora.
+//#define TABELA_RET
+#define PARCELA_ABATER
 int main(int argc, char *argv[]){
 
 struct esc
@@ -14,8 +16,15 @@ struct esc
 	float tx;
 };
 
+struct esc_pa
+{
+	float vl;
+	float tx;
+	float abat;	
+};
+
 // Escaloes IRS
-#define nr_escal 7		// Numero escaloes
+#define nr_escal 8		// Numero escaloes
 float ss_tr = 11;		// SS paga pelo trabalhador
 float ss_em = 23.75;	// SS paga pelo empregador
 float sub_alim = 4.77;	// Subsídio alimentação, em cartão refeição seria até 7.63 isentos.
@@ -23,7 +32,40 @@ float dias_trab = 250;	// Dias trabalho anuais
 float deduc_esp = 4104;	// Dedução específica (se < à SS)
 float ret_fonte = 13.5;	// Retençao na fonte (13.5%)
 float tx_adse = 3.5;		// Contribuição ADSE (3.5%)
-struct esc escal[nr_escal]=
+// Actualizado 2ºsem2023
+
+/*{
+{886.57,	14.50},
+{932.14,	21.00},
+{999.14,	21.00},
+{1106.93,	26.50},
+{1600.36,	28.50},
+{1961.36,	35.00},
+{2529.05,	37.00},
+{3694.46,	38.72},
+{5469.90,	40.05},
+{6420.55,	42.72},
+{20064.21,	44.95},
+{INT_MAX,	47.17}
+};*/
+
+// https://files.dre.pt/2s/2022/12/233000001/0001300021.pdf
+// https://economiafinancas.com/wp-content/uploads/2023/01/Tabelas_RF_Continente_2_Semestre_2023_Portal.xlsx
+
+struct esc_pa escal_pa[nr_escal]=
+{
+{1600.36,	28.50,	191.23},
+{1961.36,	35.00,	295.26},
+{2529.05,	37.00,	334.48},
+{3694.46,	38.72,	377.86},
+{5469.90,	40.05,	427.18},
+{6420.55,	42.72,	573.22},
+{20064.21,	44.95,	716.08},
+{INT_MAX,	47.17,	1162.51}
+};
+
+// PRE 2023
+/*struct esc escal[nr_escal]=
 {
 {7112,		14.5},
 {10732,		23},
@@ -32,7 +74,7 @@ struct esc escal[nr_escal]=
 {36967,		37},
 {80882,		45},
 {INT_MAX,	48}
-};
+};*/
 
 struct esc retf[25]=
 {
@@ -98,7 +140,19 @@ if (errno != 0 || *p != '\0' || conv > INT_MAX) {
 	//sstrab = (float) colect / (1 - ( ss_tr / 100 )) - colect;
 	alim = dias_trab*sub_alim;
 
-#ifndef TABELA_RET
+#ifdef TABELA_RET
+	while (retf[i].vl < salario)
+		i++;
+	imposto = colect * (retf[i].tx/100);
+	liquido = colect - imposto - sstrab;
+	printf("Tabela Ret. ft.:%d %10.2f %10.2f", i, retf[i].vl, retf[i].tx );
+#elif  defined(PARCELA_ABATER)
+	while (escal_pa[i].vl < salario)
+		i++;
+	imposto = colect * (escal_pa[i].tx/100) - escal_pa[i].abat * 14;
+	liquido = colect - imposto - sstrab;	
+	printf("Tabela Ret. c/ parcela a abater ft.:%d %10.2f€ %10.2f%% %10.2f€", i, escal_pa[i].vl, escal_pa[i].tx, escal_pa[i].abat );	
+#else
 	colect -= fmaxf(deduc_esp, sstrab);
 	//liq_menos_ret_fonte = colect * ( 1 - ( ret_fonte / 100 ) );
 	while (colect > 0)
@@ -114,12 +168,6 @@ if (errno != 0 || *p != '\0' || conv > INT_MAX) {
 				i++;
 			}
 		}
-#else
-	while (retf[i].vl < salario)
-		i++;
-	imposto = colect * (retf[i].tx/100);
-	liquido = colect - imposto - sstrab;
-	printf("Tabela Ret. ft.:%d %10.2f %10.2f", i, retf[i].vl, retf[i].tx );
 #endif
 	sprintf(out_str, "%10.2f %10.2f %10.2f %10.2f %10.2f %10.2f %10.2f %10.2f %10.2f %10.2f %10.2f %10.2f %10.2f %10.2f",salario*14, salario, liquido, liquido/14, imposto, imposto/14, alim, alim/12, sstrab, sstrab/14, ssempr, ssempr/14, (salario*14 + imposto + sstrab + ssempr) , (salario*14 + imposto + sstrab + ssempr)/14);
 	//getcwd(pwd, 100);

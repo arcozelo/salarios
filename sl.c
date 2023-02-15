@@ -193,7 +193,7 @@ if (errno != 0 || *p != '\0' || conv > INT_MAX) {
 	printf("IRS\n\tAnual:%10.2f€ Mensal:%10.2f€\n", imposto, imposto/14);
 	printf("SEG SOCIAL TRAB - Anual:%10.2f€ Mensal:%10.2f€\n", sstrab, sstrab/14);		// pago pelo trabalhador (desconta do bruto)
 	printf("SEG SOCIAL EMPR - Anual:%10.2f€ Mensal:%10.2f€\n", ssempr, ssempr/14);		// pago pelo empregador	(não desconta do bruto)
-	printf("ALIMENTAÇÃO - Anual:%10.2f€ Mensal:%10.2f€\n\n", alim, alim/12);
+	printf("ALIMENTAÇÃO - %10.2f€x21dx11m Anual:%10.2f€ Mensal(11m):%10.2f€\n\n", sub_alim, alim, alim/11);
 	//printf("\tADSE\n");
     printf("ADSE anual:%10.2f€ Liq Anual:%10.2f€ Liq Mensal:%10.2f€ \n", adse, (liquido - adse), (liquido - adse)/14);
 //	printf("CUSTO TOTAL EMPREGADOR Anual:%10.2f€ Mensal:%10.2f€ \n", (salario*14 + imposto + sstrab + ssempr) , (salario*14 + imposto + sstrab + ssempr)/14);
